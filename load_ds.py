@@ -1,4 +1,3 @@
-import pandas
 import pickle
 from imutils import paths
 import os
@@ -34,4 +33,6 @@ for subdir, dirs, files in os.walk(rootdir):
            
             bd.append(img_representation)
 
-#pickle
+pickle_file = file('representaciones_imgs.txt', 'w+b')
+pickle.dump(bd, pickle_file)
+pickle_file.close()
