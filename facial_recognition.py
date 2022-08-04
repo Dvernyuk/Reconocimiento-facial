@@ -27,7 +27,7 @@ img = dlib.load_rgb_image(args["image"])
 #detection
 img_detection = detector(img, 1)
 
-threshold = 0.6
+threshold = 0.5
 for detected in img_detection:
     #landmarks
     img_shape = sp(img, detected)
@@ -40,7 +40,7 @@ for detected in img_detection:
     img_representation = np.array(img_representation)
     
     
-    if any(findEuclideanDistance(img_representation, img_bd) < threshold for img_bd in bd)
+    if any(findEuclideanDistance(img_representation, img_bd) < threshold for img_bd in bd):
         print('Detectado en la bd')
-    else
+    else:
         print('No detectado en la bd')
