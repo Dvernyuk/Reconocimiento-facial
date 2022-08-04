@@ -19,8 +19,9 @@ sp = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("dlib_face_recognition_resnet_model_v1.dat") #CNN
 
 bd = []
-pickle_file = file('representaciones_imgs.txt', 'r+b')
+pickle_file = open('representaciones_imgs.txt', 'r+b')
 bd = pickle.load(pickle_file)
+pickle_file.close()
 
 img = dlib.load_rgb_image(args["image"])
 #detection
