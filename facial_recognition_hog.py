@@ -19,7 +19,7 @@ sp = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("dlib_face_recognition_resnet_model_v1.dat") #CNN
 
 bd = []
-pickle_file = open('representaciones_imgs.txt', 'r+b')
+pickle_file = open('representaciones_imgs_hog.txt', 'r+b')
 bd = pickle.load(pickle_file)
 pickle_file.close()
 
@@ -40,7 +40,7 @@ for detected in img_detection:
     img_representation = np.array(img_representation)
     
     
-    if any(findEuclideanDistance(img_representation, img_bd) < threshold for img_bd in bd):
+    if any(findEuclideanDistance(img_representation, face_bd) < threshold for face_bd in bd):
         print('Detectado en la bd')
     else:
         print('No detectado en la bd')
