@@ -37,14 +37,14 @@ for subdir, dirs, files in os.walk(rootdir):
         
         # Solo nos enfocamos en las fotos que detectamos una o ninguna cara
         if not(len(img_detection) > 1):
-            if len(img_detection) == 0: #La no deteccion se penaliza
+            if len(img_detection) == 0: #La no-deteccion se penaliza
                 samples += 1
             elif len(files) == 1: #Una deteccion simple no se premia
-                score += 0
                 samples += 0
+                score += 0
             else:
                 end = True
-                samples += 0
+                samples += 1
                 
                 detected = img_detection[0]
                 #landmarks

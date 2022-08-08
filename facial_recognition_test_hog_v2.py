@@ -9,6 +9,20 @@ def findEuclideanDistance(source_representation, test_representation):
     euclidean_distance = np.sum(np.multiply(euclidean_distance, euclidean_distance))
     euclidean_distance = np.sqrt(euclidean_distance)
     return euclidean_distance
+    
+def hog(img, detected):
+    #detected = img_detection[0]
+    #landmarks
+    img_shape = sp(img, detected)
+    
+    #alignment
+    img_aligned = dlib.get_face_chip(img, img_shape)
+    
+    #representacion cnn
+    img_representation = facerec.compute_face_descriptor(img_aligned)
+    img_representation = np.array(img_representation)
+    return img_representation
+    
 
 detector = dlib.get_frontal_face_detector() #HOG
 sp = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -30,42 +44,43 @@ for subdir, dirs, files in os.walk(rootdir):
     while tail != [] and not end:
         head, *tail = tail
         
-        img = dlib.load_rgb_image(os.path.join(subdir, head))
+        img1 = dlib.load_rgb_image(os.path.join(subdir, head))
 
         #detection
-        img_detection = detector(img, 1)
+        img_detection1 = detector(img1, 1)
         
         # Solo nos enfocamos en las fotos que detectamos una o ninguna cara
-        if not(len(img_detection) > 1):
-            if len(img_detection) == 0: #La no deteccion se penaliza
-                samples += 1
-            elif len(files) == 1: #Una deteccion simple no se premia
-                score += 0
+        if not(len(img_detection1) > 1):
+            if len(img_detection1) == 0: #La no-deteccion se penaliza
                 samples += 0
+            elif len(files) == 1: #Una deteccion simple no se premia
+                samples += 0
+                score += 0
             else:
                 end = True
-                samples += 0
                 
-                detected = img_detection[0]
-                #landmarks
-                img_shape = sp(img, detected)
-                
-                #alignment
-                img_aligned = dlib.get_face_chip(img, img_shape)
-                
-                #representacion cnn
-                img_representation = facerec.compute_face_descriptor(img_aligned)
-                img_representation = np.array(img_representation)
+                img_representation1 = hog(img1, img_detection1[0])
                     
-                detected_bd = 0
-                for face_bd in bd: #Recorremos por todo la bd para buscar todas las coincidencias
-                    if findEuclideanDistance(img_representation, face_bd) < threshold:
-                        detected_bd += 1
-                
-                real_matches = len(files) - 1
-                if real_matches*2 > detected_bd:
-                    score += (real_matches - abs(real_matches - detected_bd)) / real_matches
+                correct = 0
+                for file in files:
+                    if head != file:
+                        img2 = dlib.load_rgb_image(os.path.join(subdir, file))
+                        #detection
+                        img_detection2 = detector(img2, 1)
+                        
+                        best = 1
+                        for detected in img_detection2:
+                            img_representation2 = hog(img2, detected)
+                            aux = findEuclideanDistance(img_representation1, img_representation2)
+                            if best > aux:
+                                best = aux
+                        
+                        if(best < threshold):
+                            correct += 1
+                        
+                score += correct / len(files)-1
+                samples += 1
                   
-file = open('facial_recognition_test_hog_result_v2.txt', 'w')
+file = open('facial_recognition_test_hog_v2_result.txt', 'w')
 file.write("Ratio de acierto: "+str(score/samples*100)+"%")
 file.close()
