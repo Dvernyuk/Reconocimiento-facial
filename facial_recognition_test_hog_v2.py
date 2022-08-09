@@ -78,7 +78,7 @@ for subdir, dirs, files in os.walk(rootdir):
                         if(best < threshold):
                             correct += 1
                         
-                score += correct / len(files)-1
+                score += correct / (len(files)-1)
                 samples += 1
                   
 file = open('facial_recognition_test_hog_v2_result.txt', 'w')
